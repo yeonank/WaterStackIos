@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		ED2AA5F02F645D2600B8AB6E /* browser in Resources */ = {isa = PBXBuildFile; fileRef = ED2AA5EF2F645D2600B8AB6E /* browser */; };
+		ED5AA8E82F6ED64A004D64F1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED5AA8E72F6ED64A004D64F1 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		ED2AA5C12F644DE500B8AB6E /* WaterStackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaterStackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2AA5CB2F644DE500B8AB6E /* WaterStackUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaterStackUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2AA5EF2F645D2600B8AB6E /* browser */ = {isa = PBXFileReference; lastKnownFileType = folder; name = browser; path = ../WaterStackAngular/dist/mul/browser; sourceTree = "<group>"; };
+		ED5AA8E72F6ED64A004D64F1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +82,7 @@
 		ED2AA5A82F644DE300B8AB6E = {
 			isa = PBXGroup;
 			children = (
+				ED5AA8E72F6ED64A004D64F1 /* LaunchScreen.storyboard */,
 				ED2AA5EF2F645D2600B8AB6E /* browser */,
 				ED2AA5B32F644DE300B8AB6E /* WaterStack */,
 				ED2AA5C42F644DE500B8AB6E /* WaterStackTests */,
@@ -218,6 +221,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED5AA8E82F6ED64A004D64F1 /* LaunchScreen.storyboard in Resources */,
 				ED2AA5F02F645D2600B8AB6E /* browser in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,7 +412,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -437,7 +441,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
