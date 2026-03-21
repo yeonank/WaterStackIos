@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ED2AA5F02F645D2600B8AB6E /* browser in Resources */ = {isa = PBXBuildFile; fileRef = ED2AA5EF2F645D2600B8AB6E /* browser */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		ED2AA5C22F644DE500B8AB6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		ED2AA5B12F644DE300B8AB6E /* WaterStack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WaterStack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2AA5C12F644DE500B8AB6E /* WaterStackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaterStackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2AA5CB2F644DE500B8AB6E /* WaterStackUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaterStackUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED2AA5EF2F645D2600B8AB6E /* browser */ = {isa = PBXFileReference; lastKnownFileType = folder; name = browser; path = ../WaterStackAngular/dist/mul/browser; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		ED2AA5A82F644DE300B8AB6E = {
 			isa = PBXGroup;
 			children = (
+				ED2AA5EF2F645D2600B8AB6E /* browser */,
 				ED2AA5B32F644DE300B8AB6E /* WaterStack */,
 				ED2AA5C42F644DE500B8AB6E /* WaterStackTests */,
 				ED2AA5CE2F644DE500B8AB6E /* WaterStackUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED2AA5F02F645D2600B8AB6E /* browser in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
