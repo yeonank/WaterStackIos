@@ -2,28 +2,20 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 
-// 1. 커스텀 스킴 핸들러: 'app://' 요청을 가로채서 로컬 파일을 전달
+// 1. 커스텀 스킴 핸들러 (기존 코드 유지)
 class LocalAssetHandler: NSObject, WKURLSchemeHandler {
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else { return }
-        
-        // 경로 파악 (기본값 index.app.html)
         var path = url.path
-        if path.isEmpty || path == "/" {
-            path = "/index.app.html"
-        }
+        if path.isEmpty || path == "/" { path = "/index.app.html" }
         
-        // browser 폴더 내 실제 파일 경로 찾기
-        let fileName = String(path.dropFirst()) // 앞의 "/" 제거
-        guard let fileURL = Bundle.main.url(forResource: "browser/\(fileName)", withExtension: nil) else {
-            return
-        }
+        let fileName = String(path.dropFirst())
+        guard let fileURL = Bundle.main.url(forResource: "browser/\(fileName)", withExtension: nil) else { return }
         
         do {
             let data = try Data(contentsOf: fileURL)
             let mimeType = getMimeType(for: fileURL)
             let response = URLResponse(url: url, mimeType: mimeType, expectedContentLength: data.count, textEncodingName: "utf-8")
-            
             urlSchemeTask.didReceive(response)
             urlSchemeTask.didReceive(data)
             urlSchemeTask.didFinish()
@@ -49,44 +41,80 @@ class LocalAssetHandler: NSObject, WKURLSchemeHandler {
     }
 }
 
-// 2. SwiftUI WebView Wrapper
+// 2. WebView Wrapper (기존 코드 유지)
 struct WebView: UIViewRepresentable {
-    
     class Coordinator: NSObject, WKScriptMessageHandler {
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            if message.name == "logger" {
-                print("🌐 JS Log: \(message.body)")
-            }
+            if message.name == "logger" { print("🌐 JS Log: \(message.body)") }
         }
     }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
+    func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
-        
-        // ✅ 커스텀 핸들러 등록
         config.setURLSchemeHandler(LocalAssetHandler(), forURLScheme: "app")
-        
-        // JS 로그 브릿지 등록
         config.userContentController.add(context.coordinator, name: "logger")
         
         let webView = WKWebView(frame: .zero, configuration: config)
+        if #available(iOS 16.4, *) { webView.isInspectable = true }
+        webView.allowsBackForwardNavigationGestures = true
         
-        if #available(iOS 16.4, *) {
-            webView.isInspectable = true
+        // 초기 로드 시점 조절을 위해 여기서 로드할 수도 있습니다.
+        if let url = URL(string: "app://localhost/index.app.html") {
+            webView.load(URLRequest(url: url))
         }
         
-        webView.allowsBackForwardNavigationGestures = true
         return webView
     }
 
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        // ✅ 이제 file:// 이 아닌 커스텀 주소로 접속합니다.
-        if let url = URL(string: "app://localhost/index.app.html") {
-            uiView.load(URLRequest(url: url))
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
+}
+
+// 3. 통합된 메인 뷰 (스플래시 로직 추가)
+struct MainEntryView: View {
+    @State private var isSplashScreenActive = true
+    @State private var logoOpacity = 0.0
+    @State private var logoScale = 0.7
+
+    var body: some View {
+        ZStack {
+            if isSplashScreenActive {
+                // --- 스플래시 화면 ---
+                Color.white // 배경색 설정
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 20) {
+                    Image(systemName: "safari.fill") // 앱 로고 이미지로 교체하세요
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.blue)
+                    
+                    Text("My Web App")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                }
+                .scaleEffect(logoScale)
+                .opacity(logoOpacity)
+                .onAppear {
+                    // 등장 애니메이션
+                    withAnimation(.easeOut(duration: 1.0)) {
+                        self.logoOpacity = 1.0
+                        self.logoScale = 1.0
+                    }
+                    
+                    // 2.5초 후 메인 WebView로 전환
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            self.isSplashScreenActive = false
+                        }
+                    }
+                }
+            } else {
+                // --- 실제 웹뷰 화면 ---
+                ContentView()
+                    .transition(.opacity) // 부드러운 화면 교체 효과
+            }
         }
     }
 }
@@ -99,5 +127,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainEntryView()
 }

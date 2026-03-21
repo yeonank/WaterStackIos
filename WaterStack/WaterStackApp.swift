@@ -11,7 +11,7 @@ import SwiftUI
 struct WaterStackApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainEntryView()
         }
     }
 }
