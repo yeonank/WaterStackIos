@@ -1,8 +1,7 @@
 import SwiftUI
 import WebKit
-import UniformTypeIdentifiers
 
-// 1. 커스텀 스킴 핸들러 (기존 코드 유지)
+// 1. 커스텀 스킴 핸들러 (기존 동일)
 class LocalAssetHandler: NSObject, WKURLSchemeHandler {
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else { return }
@@ -32,35 +31,52 @@ class LocalAssetHandler: NSObject, WKURLSchemeHandler {
         case "html": return "text/html"
         case "js":   return "application/javascript"
         case "css":  return "text/css"
-        case "svg":  return "image/svg+xml"
-        case "png":  return "image/png"
-        case "jpg", "jpeg": return "image/jpeg"
-        case "woff", "woff2": return "font/woff2"
         default: return "application/octet-stream"
         }
     }
 }
 
-// 2. WebView Wrapper (기존 코드 유지)
+// 2. WebView Wrapper (수정됨)
 struct WebView: UIViewRepresentable {
+    // 🔥 추가: 스플래시 화면을 끌 수 있도록 바인딩 변수 추가
+    @Binding var isSplashScreenActive: Bool
+
     class Coordinator: NSObject, WKScriptMessageHandler {
+        var parent: WebView
+
+        init(_ parent: WebView) {
+            self.parent = parent
+        }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            if message.name == "logger" { print("🌐 JS Log: \(message.body)") }
+            if message.name == "logger" {
+                print("🌐 JS Log: \(message.body)")
+            }
+            // 🔥 추가: 'hideSplash' 메시지를 받으면 스플래시를 끔
+            if message.name == "hideSplash" {
+                print("hide splash!!")
+                DispatchQueue.main.async {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        self.parent.isSplashScreenActive = false
+                    }
+                }
+            }
         }
     }
 
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(LocalAssetHandler(), forURLScheme: "app")
+        
+        // 🔥 추가: 'hideSplash'라는 이름의 핸들러 등록
         config.userContentController.add(context.coordinator, name: "logger")
+        config.userContentController.add(context.coordinator, name: "hideSplash")
         
         let webView = WKWebView(frame: .zero, configuration: config)
         if #available(iOS 16.4, *) { webView.isInspectable = true }
-        webView.allowsBackForwardNavigationGestures = true
         
-        // 초기 로드 시점 조절을 위해 여기서 로드할 수도 있습니다.
         if let url = URL(string: "app://localhost/index.app.html") {
             webView.load(URLRequest(url: url))
         }
@@ -71,61 +87,38 @@ struct WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
-// 3. 통합된 메인 뷰 (스플래시 로직 추가)
+// 3. 메인 뷰 (수정됨)
 struct MainEntryView: View {
     @State private var isSplashScreenActive = true
-    @State private var logoOpacity = 0.0
-    @State private var logoScale = 0.7
-
+    
     var body: some View {
         ZStack {
+            // 실제 웹뷰를 먼저 밑에 깔아둡니다 (미리 로딩 시작)
+            // 🔥 변경: ContentView에 바인딩 전달
+            ContentView(isSplashScreenActive: $isSplashScreenActive)
+            
             if isSplashScreenActive {
-                // --- 스플래시 화면 ---
-                Color.white // 배경색 설정
-                    .ignoresSafeArea()
-                
+                // --- 스플래시 화면 (위에 덮음) ---
+                Color.white.ignoresSafeArea()
                 VStack(spacing: 20) {
-                    Image(systemName: "safari.fill") // 앱 로고 이미지로 교체하세요
+                    Image(systemName: "safari.fill")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
                         .frame(width: 100, height: 100)
                         .foregroundColor(.blue)
-                    
-                    Text("My Web App")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                    Text("Loading Angular...")
                 }
-                .scaleEffect(logoScale)
-                .opacity(logoOpacity)
-                .onAppear {
-                    // 등장 애니메이션
-                    withAnimation(.easeOut(duration: 1.0)) {
-                        self.logoOpacity = 1.0
-                        self.logoScale = 1.0
-                    }
-                    
-                    // 2.5초 후 메인 WebView로 전환
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            self.isSplashScreenActive = false
-                        }
-                    }
-                }
-            } else {
-                // --- 실제 웹뷰 화면 ---
-                ContentView()
-                    .transition(.opacity) // 부드러운 화면 교체 효과
+                .transition(.opacity) // 사라질 때 효과
             }
         }
     }
 }
 
 struct ContentView: View {
+    @Binding var isSplashScreenActive: Bool
+    
     var body: some View {
-        WebView()
+        // 🔥 변경: WebView에 바인딩 전달
+        WebView(isSplashScreenActive: $isSplashScreenActive)
             .edgesIgnoringSafeArea(.all)
     }
-}
-
-#Preview {
-    MainEntryView()
 }
