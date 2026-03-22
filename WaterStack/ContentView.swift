@@ -65,9 +65,8 @@ struct WebView: UIViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.backgroundColor = .clear
         webView.scrollView.bounces = false
-        webView.scrollView.alwaysBounceVertical = false
-        webView.scrollView.alwaysBounceHorizontal = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+        //상하단 노치 보호하려고 넣어놓은 것을 삭제
         if #available(iOS 16.4, *) { webView.isInspectable = true }
         if let url = URL(string: "app://localhost/index.app.html") {
             webView.load(URLRequest(url: url))
@@ -163,7 +162,9 @@ struct MainEntryView: View {
     var body: some View {
         ZStack {
             WebView(isSplashScreenActive: $isSplashScreenActive)
-                .ignoresSafeArea(.container, edges: [.bottom])
+                .ignoresSafeArea()
+                    //이쪽을 건들면 웹뷰 위아래 safearea가 고쳐져 여백이 생겼다 없어졌다. 함
+                    //그리고 .container을 넣으면 키보드 올라오면 위아래로 올라감.
             
             if isSplashScreenActive {
                 DropletMergeSplashView()
